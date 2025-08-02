@@ -23,7 +23,7 @@ public class DrawDeck : MonoBehaviour
 
     //         }
     //     }
-    void Update()
+    void Start()
     {
         print(this.transform.childCount);
     }
