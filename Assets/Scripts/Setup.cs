@@ -6,7 +6,6 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.Timeline;
 using NUnit.Framework;
-using UnityEditor.U2D;
 public class Setup : MonoBehaviour
 {
 
