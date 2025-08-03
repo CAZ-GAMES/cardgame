@@ -20,13 +20,6 @@ jobs:
           key: Library-WebGL
           restore-keys: Library-
       
-      - name: Configure Unity for GitHub Pages
-        run: |
-          # Create a build configuration that disables Brotli compression
-          mkdir -p ProjectSettings
-          echo 'WebGL:
-            compressionFormat: 0' >> ProjectSettings/ProjectSettings.asset
-      
       - uses: game-ci/unity-builder@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
