@@ -20,6 +20,13 @@ jobs:
           key: Library-WebGL
           restore-keys: Library-
       
+      - name: Configure Unity for GitHub Pages
+        run: |
+          # Create a build configuration that disables Brotli compression
+          mkdir -p ProjectSettings
+          echo 'WebGL:
+            compressionFormat: 0' >> ProjectSettings/ProjectSettings.asset
+      
       - uses: game-ci/unity-builder@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
@@ -109,6 +116,32 @@ jobs:
           </html>
           EOF
           fi
+          
+          # Install brotli for decompression
+          sudo apt-get update && sudo apt-get install -y brotli
+          
+          # Decompress .br files and remove compressed versions
+          echo "Decompressing Brotli files..."
+          find ./webgl-build -name "*.br" | while read -r file; do
+            echo "Decompressing: $file"
+            # Get the original filename by removing .br extension
+            original_file="${file%.br}"
+            # Decompress the file
+            brotli -d "$file" -o "$original_file"
+            # Remove the compressed version
+            rm "$file"
+            echo "Created: $original_file"
+          done
+          
+          # Also decompress .gz files if present
+          echo "Decompressing Gzip files..."
+          find ./webgl-build -name "*.gz" | while read -r file; do
+            echo "Decompressing: $file"
+            original_file="${file%.gz}"
+            gunzip -c "$file" > "$original_file"
+            rm "$file"
+            echo "Created: $original_file"
+          done
           
           # Show final structure
           echo "Final build structure:"
