@@ -52,6 +52,68 @@ jobs:
           name: WebGL-Build
           path: ./webgl-build
       
+      - name: Fix WebGL build for GitHub Pages
+        run: |
+          # List the contents to see what Unity generated
+          ls -la ./webgl-build/
+          
+          # Unity typically creates an index.html file, but it might be in a subdirectory
+          # Find the index.html file
+          INDEX_FILE=$(find ./webgl-build -name "index.html" | head -1)
+          
+          if [ -n "$INDEX_FILE" ]; then
+            echo "Found index.html at: $INDEX_FILE"
+            # If index.html is in a subdirectory, move contents to root
+            INDEX_DIR=$(dirname "$INDEX_FILE")
+            if [ "$INDEX_DIR" != "./webgl-build" ]; then
+              echo "Moving contents from $INDEX_DIR to ./webgl-build/"
+              mv "$INDEX_DIR"/* ./webgl-build/
+              # Remove empty subdirectories
+              find ./webgl-build -type d -empty -delete
+            fi
+          else
+            echo "No index.html found, creating a basic one"
+            # Create a basic index.html that lists available files
+            cat > ./webgl-build/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>Unity WebGL Build</title>
+          </head>
+          <body>
+              <h1>Unity WebGL Build</h1>
+              <p>Available files:</p>
+              <ul id="fileList"></ul>
+              <script>
+                  // List all available files for debugging
+                  fetch('.')
+                      .then(response => response.text())
+                      .then(data => {
+                          const parser = new DOMParser();
+                          const doc = parser.parseFromString(data, 'text/html');
+                          const links = doc.querySelectorAll('a');
+                          const fileList = document.getElementById('fileList');
+                          links.forEach(link => {
+                              if (link.href && !link.href.includes('..')) {
+                                  const li = document.createElement('li');
+                                  const a = document.createElement('a');
+                                  a.href = link.href;
+                                  a.textContent = link.textContent;
+                                  li.appendChild(a);
+                                  fileList.appendChild(li);
+                              }
+                          });
+                      });
+              </script>
+          </body>
+          </html>
+          EOF
+          fi
+          
+          # Show final structure
+          echo "Final build structure:"
+          find ./webgl-build -type f | head -20
+      
       - name: Setup Pages
         uses: actions/configure-pages@v4
       
