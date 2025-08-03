@@ -55,7 +55,8 @@ jobs:
       - name: Fix WebGL build for GitHub Pages
         run: |
           # List the contents to see what Unity generated
-          ls -la ./webgl-build/
+          echo "=== Initial build contents ==="
+          find ./webgl-build -type f -name "*.br" -o -name "*.gz" -o -name "*.js" -o -name "*.wasm" | sort
           
           # Unity typically creates an index.html file, but it might be in a subdirectory
           # Find the index.html file
@@ -71,74 +72,74 @@ jobs:
               # Remove empty subdirectories
               find ./webgl-build -type d -empty -delete
             fi
-          else
-            echo "No index.html found, creating a basic one"
-            # Create a basic index.html that lists available files
-            cat > ./webgl-build/index.html << 'EOF'
-          <!DOCTYPE html>
-          <html>
-          <head>
-              <title>Unity WebGL Build</title>
-          </head>
-          <body>
-              <h1>Unity WebGL Build</h1>
-              <p>Available files:</p>
-              <ul id="fileList"></ul>
-              <script>
-                  // List all available files for debugging
-                  fetch('.')
-                      .then(response => response.text())
-                      .then(data => {
-                          const parser = new DOMParser();
-                          const doc = parser.parseFromString(data, 'text/html');
-                          const links = doc.querySelectorAll('a');
-                          const fileList = document.getElementById('fileList');
-                          links.forEach(link => {
-                              if (link.href && !link.href.includes('..')) {
-                                  const li = document.createElement('li');
-                                  const a = document.createElement('a');
-                                  a.href = link.href;
-                                  a.textContent = link.textContent;
-                                  li.appendChild(a);
-                                  fileList.appendChild(li);
-                              }
-                          });
-                      });
-              </script>
-          </body>
-          </html>
-          EOF
           fi
           
           # Install brotli for decompression
           sudo apt-get update && sudo apt-get install -y brotli
           
           # Decompress .br files and remove compressed versions
-          echo "Decompressing Brotli files..."
+          echo "=== Decompressing Brotli files ==="
           find ./webgl-build -name "*.br" | while read -r file; do
-            echo "Decompressing: $file"
-            # Get the original filename by removing .br extension
-            original_file="${file%.br}"
-            # Decompress the file
-            brotli -d "$file" -o "$original_file"
-            # Remove the compressed version
-            rm "$file"
-            echo "Created: $original_file"
+            if [ -f "$file" ]; then
+              echo "Processing: $file"
+              # Get the original filename by removing .br extension
+              original_file="${file%.br}"
+              echo "Target file: $original_file"
+              
+              # Decompress the file
+              if brotli -d "$file" -o "$original_file"; then
+                echo "Successfully decompressed to: $original_file"
+                # Verify the decompressed file exists and has content
+                if [ -f "$original_file" ] && [ -s "$original_file" ]; then
+                  echo "Decompressed file verified, removing compressed version: $file"
+                  rm "$file"
+                else
+                  echo "ERROR: Decompressed file is empty or missing!"
+                fi
+              else
+                echo "ERROR: Failed to decompress $file"
+              fi
+            fi
           done
           
           # Also decompress .gz files if present
-          echo "Decompressing Gzip files..."
+          echo "=== Decompressing Gzip files ==="
           find ./webgl-build -name "*.gz" | while read -r file; do
-            echo "Decompressing: $file"
-            original_file="${file%.gz}"
-            gunzip -c "$file" > "$original_file"
-            rm "$file"
-            echo "Created: $original_file"
+            if [ -f "$file" ]; then
+              echo "Processing: $file"
+              original_file="${file%.gz}"
+              echo "Target file: $original_file"
+              
+              if gunzip -c "$file" > "$original_file"; then
+                echo "Successfully decompressed to: $original_file"
+                if [ -f "$original_file" ] && [ -s "$original_file" ]; then
+                  echo "Decompressed file verified, removing compressed version: $file"
+                  rm "$file"
+                else
+                  echo "ERROR: Decompressed file is empty or missing!"
+                fi
+              else
+                echo "ERROR: Failed to decompress $file"
+              fi
+            fi
           done
           
+          # Update index.html to reference uncompressed files
+          echo "=== Updating index.html references ==="
+          if [ -f "./webgl-build/index.html" ]; then
+            # Remove .br and .gz extensions from file references in index.html
+            sed -i 's/\.br"/"/' ./webgl-build/index.html
+            sed -i 's/\.gz"/"/' ./webgl-build/index.html
+            sed -i "s/\.br'/'/" ./webgl-build/index.html
+            sed -i "s/\.gz'/'/" ./webgl-build/index.html
+            echo "Updated index.html to reference uncompressed files"
+          fi
+          
           # Show final structure
-          echo "Final build structure:"
-          find ./webgl-build -type f | head -20
+          echo "=== Final build structure ==="
+          find ./webgl-build -type f | sort
+          echo "=== Checking for remaining compressed files ==="
+          find ./webgl-build -name "*.br" -o -name "*.gz" | wc -l | xargs -I {} echo "Compressed files remaining: {}"
       
       - name: Setup Pages
         uses: actions/configure-pages@v4
