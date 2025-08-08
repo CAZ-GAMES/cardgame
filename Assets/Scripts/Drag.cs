@@ -19,12 +19,6 @@ public class Drag : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHand
     {
         this.gameObject.GetComponent<BoxCollider2D>().enabled = false;
         this.gameObject.GetComponent<Renderer>().sortingOrder = 99;
-        // GameObject[] objectsToDisable = GameObject.FindGameObjectsWithTag("Card");
-
-        // foreach (GameObject objectToDisable in objectsToDisable)
-        // {
-        //     objectToDisable.GetComponent<BoxCollider2D>().isTrigger = false;
-        // }
 
         posToReturnTo = transform.position;
         originalPosition = transform.position;
@@ -46,17 +40,50 @@ public class Drag : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHand
         transform.position = new Vector3(newPosition.x, newPosition.y, transform.position.z);
     }
 
-    public void OnEndDrag(PointerEventData eventData)
+    public void PlaceCardPerfectlyInSlot()
     {
-        // this.transform.position = posToReturnTo;
         gameObject.GetComponent<BoxCollider2D>().enabled = true;
-        //gameObject.GetComponent<BoxCollider2D>().enabled = false;
+
         var myTween = transform.DOMove(posToReturnTo, 0.3f);
         myTween.OnComplete(() =>
         {
             //gameObject.GetComponent<BoxCollider2D>().enabled = true;
             // transform.DOPunchPosition(transform.position, .25f, 1, 0f, false);
         });
+    }
+
+    public void ReturnCardToOriginSlot()
+    {
+        gameObject.GetComponent<BoxCollider2D>().enabled = true;
+
+        var myTween = transform.DOMove(originalPosition, 0.3f);
+        myTween.OnComplete(() =>
+        {
+            //gameObject.GetComponent<BoxCollider2D>().enabled = true;
+            // transform.DOPunchPosition(transform.position, .25f, 1, 0f, false);
+        });
+    }
+
+    public void OnlyPlacePlayerHandCardInPlayPile(PointerEventData eventData)
+    {
+        print("Original Parent: " + eventData.pointerDrag.gameObject.GetComponent<Drag>().originalParent.name);
+
+        if (
+            (eventData.pointerDrag.gameObject.GetComponent<Drag>().originalParent.name == "Player Hand 0")
+            || (eventData.pointerDrag.gameObject.GetComponent<Drag>().originalParent.name == "Player Hand 1")
+            || (eventData.pointerDrag.gameObject.GetComponent<Drag>().originalParent.name == "Player Hand 2")
+        )
+        {
+            PlaceCardPerfectlyInSlot();
+        }
+        else
+        {
+            ReturnCardToOriginSlot();
+        }
+    }
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        OnlyPlacePlayerHandCardInPlayPile(eventData);
     }
 
 }
