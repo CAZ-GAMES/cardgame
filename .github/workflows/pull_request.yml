@@ -1,42 +1,154 @@
-name: Build project for WebGL
-
-on: [pull_request]
+name: Build and Deploy WebGL to GitHub Pages
+on: 
+  pull_request:
+  push:
+    branches: [ main ]
 
 jobs:
-  buildForAllSupportedPlatforms:
-    name: Build for ${{ matrix.targetPlatform }}
+  build:
+    name: Build WebGL
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        targetPlatform:
-          # - StandaloneOSX # Build a macOS standalone (Intel 64-bit).
-          # - StandaloneWindows # Build a Windows standalone.
-          # - StandaloneWindows64 # Build a Windows 64-bit standalone.
-          # - StandaloneLinux64 # Build a Linux 64-bit standalone.
-          # - iOS # Build an iOS player.
-          # - Android # Build an Android .apk standalone app.
-          - WebGL
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           lfs: true
+      
       - uses: actions/cache@v3
         with:
           path: Library
-          key: Library-${{ matrix.targetPlatform }}
+          key: Library-WebGL
           restore-keys: Library-
-      - if: matrix.targetPlatform == 'Android'
-        uses: jlumbroso/free-disk-space@v1.3.1
+      
       - uses: game-ci/unity-builder@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
-          targetPlatform: ${{ matrix.targetPlatform }}
+          targetPlatform: WebGL
+      
+      # Upload build artifacts
       - uses: actions/upload-artifact@v4
         with:
-          name: Build-${{ matrix.targetPlatform }}
-          path: build/${{ matrix.targetPlatform }}
+          name: WebGL-Build
+          path: build/WebGL
+
+  # Deploy to GitHub Pages (only on main branch push)
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download WebGL build
+        uses: actions/download-artifact@v4
+        with:
+          name: WebGL-Build
+          path: ./webgl-build
+      
+      - name: Fix WebGL build for GitHub Pages
+        run: |
+          # List the contents to see what Unity generated
+          echo "=== Initial build contents ==="
+          find ./webgl-build -type f -name "*.br" -o -name "*.gz" -o -name "*.js" -o -name "*.wasm" | sort
+          
+          # Unity typically creates an index.html file, but it might be in a subdirectory
+          # Find the index.html file
+          INDEX_FILE=$(find ./webgl-build -name "index.html" | head -1)
+          
+          if [ -n "$INDEX_FILE" ]; then
+            echo "Found index.html at: $INDEX_FILE"
+            # If index.html is in a subdirectory, move contents to root
+            INDEX_DIR=$(dirname "$INDEX_FILE")
+            if [ "$INDEX_DIR" != "./webgl-build" ]; then
+              echo "Moving contents from $INDEX_DIR to ./webgl-build/"
+              mv "$INDEX_DIR"/* ./webgl-build/
+              # Remove empty subdirectories
+              find ./webgl-build -type d -empty -delete
+            fi
+          fi
+          
+          # Install brotli for decompression
+          sudo apt-get update && sudo apt-get install -y brotli
+          
+          # Decompress .br files and remove compressed versions
+          echo "=== Decompressing Brotli files ==="
+          find ./webgl-build -name "*.br" | while read -r file; do
+            if [ -f "$file" ]; then
+              echo "Processing: $file"
+              # Get the original filename by removing .br extension
+              original_file="${file%.br}"
+              echo "Target file: $original_file"
+              
+              # Decompress the file
+              if brotli -d "$file" -o "$original_file"; then
+                echo "Successfully decompressed to: $original_file"
+                # Verify the decompressed file exists and has content
+                if [ -f "$original_file" ] && [ -s "$original_file" ]; then
+                  echo "Decompressed file verified, removing compressed version: $file"
+                  rm "$file"
+                else
+                  echo "ERROR: Decompressed file is empty or missing!"
+                fi
+              else
+                echo "ERROR: Failed to decompress $file"
+              fi
+            fi
+          done
+          
+          # Also decompress .gz files if present
+          echo "=== Decompressing Gzip files ==="
+          find ./webgl-build -name "*.gz" | while read -r file; do
+            if [ -f "$file" ]; then
+              echo "Processing: $file"
+              original_file="${file%.gz}"
+              echo "Target file: $original_file"
+              
+              if gunzip -c "$file" > "$original_file"; then
+                echo "Successfully decompressed to: $original_file"
+                if [ -f "$original_file" ] && [ -s "$original_file" ]; then
+                  echo "Decompressed file verified, removing compressed version: $file"
+                  rm "$file"
+                else
+                  echo "ERROR: Decompressed file is empty or missing!"
+                fi
+              else
+                echo "ERROR: Failed to decompress $file"
+              fi
+            fi
+          done
+          
+          # Update index.html to reference uncompressed files
+          echo "=== Updating index.html references ==="
+          if [ -f "./webgl-build/index.html" ]; then
+            # Remove .br and .gz extensions from file references in index.html
+            sed -i 's/\.br"/"/' ./webgl-build/index.html
+            sed -i 's/\.gz"/"/' ./webgl-build/index.html
+            sed -i "s/\.br'/'/" ./webgl-build/index.html
+            sed -i "s/\.gz'/'/" ./webgl-build/index.html
+            echo "Updated index.html to reference uncompressed files"
+          fi
+          
+          # Show final structure
+          echo "=== Final build structure ==="
+          find ./webgl-build -type f | sort
+          echo "=== Checking for remaining compressed files ==="
+          find ./webgl-build -name "*.br" -o -name "*.gz" | wc -l | xargs -I {} echo "Compressed files remaining: {}"
+      
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      
+      - name: Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./webgl-build
+      
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
