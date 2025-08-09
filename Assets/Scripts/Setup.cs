@@ -21,6 +21,8 @@ public class Setup : MonoBehaviour
     [SerializeField] GameObject[] playerHand = new GameObject[3];
     [SerializeField] List<GameObject> deck = new List<GameObject>();
 
+    [SerializeField] GameObject deckCover;
+
     [SerializeField] Sprite[] sprites;
     [SerializeField] Sprite cardBack;
     Sprite[] spritesShuffled;
@@ -159,6 +161,10 @@ public class Setup : MonoBehaviour
             pre.transform.DOMove(deck[0].transform.position, 0.35f);
             cardsDealt++;
         }
-        print(GameObject.Find("Deck").transform.childCount);
+        // call DrawDeck function in the deck script to get started
+        var drawDeck = GameObject.Find("Deck").GetComponent<DrawDeck>();
+        drawDeck.SetCardsActive();
+        // activate deckCover to have between card pick ups
+        deckCover.GetComponent<SpriteRenderer>().enabled = true;
     }
 }
