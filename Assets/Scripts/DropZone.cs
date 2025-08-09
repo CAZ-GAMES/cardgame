@@ -6,10 +6,9 @@ using UnityEngine.EventSystems;
 
 public class DropZone : MonoBehaviour, IPointerUpHandler, IPointerClickHandler, IDropHandler
 {
-    // use this to set the position for the card 
-    public void OnDrop(PointerEventData eventData)
+    public void DropCardOnlyOnPlayerPile(PointerEventData eventData)
     {
-        print("What was dropped: " + eventData.pointerDrag);
+        print("Dropped in card only function: " + eventData.pointerDrag);
         if (this.transform.childCount > 0)
         {
             print(this.transform.GetChild(0).gameObject.name);
@@ -24,6 +23,12 @@ public class DropZone : MonoBehaviour, IPointerUpHandler, IPointerClickHandler, 
             eventData.pointerDrag.transform.SetParent(this.transform);
             eventData.pointerDrag.gameObject.GetComponent<Drag>().posToReturnTo = this.transform.position;
         }
+    }
+
+    // use this to set the position for the card 
+    public void OnDrop(PointerEventData eventData)
+    {
+        // DropCardOnlyOnPlayerPile(eventData);
     }
     public void OnPointerClick(PointerEventData eventData)
     {
