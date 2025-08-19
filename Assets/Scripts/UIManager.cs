@@ -8,18 +8,26 @@ public class UIManager : MonoBehaviour
     void OnEnable()
     {
         // subscribe to action that triggers once all cards are dealt
-        Setup.OnCardsDealt += ShowButton;
+        GameManager.OnGameStateChanged += ShowButton;
     }
 
     void OnDisable()
     {
         // unsubscribe to avoid issues
-        Setup.OnCardsDealt -= ShowButton;
+        GameManager.OnGameStateChanged -= ShowButton;
     }
 
-    void ShowButton()
+    void ShowButton(GameState state)
     {
         // activate UI Button to start game when player is ready
-        readyUP.SetActive(true);
+        readyUP.SetActive(state == GameState.PlayerReadyUp);
+    }
+
+    public void PlayerReady()
+    {
+        readyUP.SetActive(false);
+        GameManager.Instance.UpdateGameState(GameState.Ready);
+        // make faceup cards not interactable
+
     }
 }

@@ -7,10 +7,9 @@ using System.Linq;
 using System;
 using UnityEngine.Timeline;
 using NUnit.Framework;
+using Unity.VisualScripting;
 public class Setup : MonoBehaviour
 {
-
-    public static event Action OnCardsDealt;
     public GameObject prefab;
     public static List<Sprite> restOfDeck = new List<Sprite>();
 
@@ -30,22 +29,40 @@ public class Setup : MonoBehaviour
     Sprite[] spritesShuffled;
     Stack<Sprite> spritesShuffledStack = new Stack<Sprite>();
     int cardsDealt = 0;
-    void Start()
+
+    void OnEnable()
+    {
+        GameManager.OnGameStateChanged += RunCoroutine;
+    }
+
+    void OnDisable()
+    {
+        GameManager.OnGameStateChanged -= RunCoroutine;
+    }
+    //awake needs to be called so that everything is shuffled before anything else is called
+    void Awake()
     {
         spritesShuffled = Shuffle<Sprite>(sprites);
         for (int i = 0; i < spritesShuffled.Length; i++)
         {
             spritesShuffledStack.Push(spritesShuffled[i]);
         }
-        StartCoroutine(SetCompDownCards());
-
     }
-
     T[] Shuffle<T>(T[] arr)
     {
         System.Random random = new System.Random();
         return arr.OrderBy(x => random.Next()).ToArray();
     }
+
+    // runs the coroutine to get the cycle going to setup all cards on screen and in deck
+    private void RunCoroutine(GameState state)
+    {
+        if (state == GameState.ShuffleUpAndDeal)
+        {
+            StartCoroutine(SetCompDownCards());
+        }
+    }
+
 
     IEnumerator SetCompDownCards()
     {
@@ -169,7 +186,7 @@ public class Setup : MonoBehaviour
         // activate deckCover to have between card pick ups
         deckCover.GetComponent<SpriteRenderer>().enabled = true;
 
-        // Invokes action if there are subscribers
-        OnCardsDealt?.Invoke();
+        // change gamestate to player ready up
+        GameManager.Instance.UpdateGameState(GameState.PlayerReadyUp);
     }
 }
