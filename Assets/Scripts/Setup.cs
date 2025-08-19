@@ -4,11 +4,13 @@ using System.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
 using System.Linq;
+using System;
 using UnityEngine.Timeline;
 using NUnit.Framework;
 public class Setup : MonoBehaviour
 {
 
+    public static event Action OnCardsDealt;
     public GameObject prefab;
     public static List<Sprite> restOfDeck = new List<Sprite>();
 
@@ -166,5 +168,8 @@ public class Setup : MonoBehaviour
         drawDeck.SetCardsActive();
         // activate deckCover to have between card pick ups
         deckCover.GetComponent<SpriteRenderer>().enabled = true;
+
+        // Invokes action if there are subscribers
+        OnCardsDealt?.Invoke();
     }
 }
