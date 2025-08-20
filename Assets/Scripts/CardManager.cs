@@ -2,15 +2,30 @@ using UnityEngine;
 
 public class CardManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField]
+    GameObject PlayerFaceDown0;
+    [SerializeField]
+    GameObject PlayerFaceDown1;
+    [SerializeField]
+    GameObject PlayerFaceDown2;
+    void OnEnable()
     {
-        
+        GameManager.OnGameStateChanged += FaceUpFreeze;
     }
 
-    // Update is called once per frame
-    void Update()
+    void OnDisable()
     {
-        
+        GameManager.OnGameStateChanged -= FaceUpFreeze;
+    }
+
+    void FaceUpFreeze(GameState state)
+    {
+        // player cards are frozen until endgame
+        if (state == GameState.Ready)
+        {
+            PlayerFaceDown0.transform.GetChild(0).GetComponent<BoxCollider2D>().enabled = false;
+            PlayerFaceDown1.transform.GetChild(0).GetComponent<BoxCollider2D>().enabled = false;
+            PlayerFaceDown2.transform.GetChild(0).GetComponent<BoxCollider2D>().enabled = false;
+        }
     }
 }
