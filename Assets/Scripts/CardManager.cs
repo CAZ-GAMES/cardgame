@@ -15,6 +15,8 @@ public class CardManager : MonoBehaviour
     GameObject[] CompFaceDownCards;
     [SerializeField]
     GameObject[] CompHandCards;
+    [SerializeField]
+    GameObject Deck;
 
 
     void OnEnable()
@@ -42,6 +44,12 @@ public class CardManager : MonoBehaviour
             for (int i = 0; i < PlayerHandCards.Length; i++)
             {
                 PlayerHandCards[i].transform.GetChild(0).GetComponent<BoxCollider2D>().enabled = true;
+            }
+            // Unlock deck for now might need to use a different call for unlocking deck
+            // TODO: Make another way to call function for unlocking deck
+            for (int i = 0; i < Deck.transform.childCount; i++)
+            {
+                Deck.transform.GetChild(i).GetComponent<BoxCollider2D>().enabled = true;
             }
         }
     }

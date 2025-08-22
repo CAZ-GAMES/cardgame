@@ -23,10 +23,11 @@ public class Drag : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHand
         posToReturnTo = transform.position;
         originalPosition = transform.position;
         originalParent = transform.parent;
-        if (faceDown)
-        {
-            this.GetComponent<SpriteRenderer>().sprite = faceSprite;
-        }
+        // TODO: Add function for this to only happen when card is placed in player hand
+        // if (faceDown)
+        // {
+        //     this.GetComponent<SpriteRenderer>().sprite = faceSprite;
+        // }
     }
 
     public void OnDrag(PointerEventData eventData)
