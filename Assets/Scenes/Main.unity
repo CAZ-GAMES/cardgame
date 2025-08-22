@@ -1167,9 +1167,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a7d33dba01244cf99b29bdbabac6b91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayerFaceDown0: {fileID: 1927156042}
-  PlayerFaceDown1: {fileID: 487636587}
-  PlayerFaceDown2: {fileID: 1476077840}
+  PlayerFaceUpCards:
+  - {fileID: 1927156042}
+  - {fileID: 487636587}
+  - {fileID: 1476077840}
+  PlayerFaceDownCards:
+  - {fileID: 1519438887}
+  - {fileID: 1114358247}
+  - {fileID: 1289147076}
+  PlayerHandCards:
+  - {fileID: 1114606382}
+  - {fileID: 608791838}
+  - {fileID: 1774480552}
+  CompFaceUpCards:
+  - {fileID: 686907850}
+  - {fileID: 1980724873}
+  - {fileID: 1793023832}
+  CompFaceDownCards:
+  - {fileID: 1629832985}
+  - {fileID: 1281318223}
+  - {fileID: 809028844}
+  CompHandCards:
+  - {fileID: 538425271}
+  - {fileID: 900559275}
+  - {fileID: 1737451634}
 --- !u!4 &541160997
 Transform:
   m_ObjectHideFlags: 0
