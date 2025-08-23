@@ -6,6 +6,9 @@ TagManager:
   tags:
   - Card Slot
   - Card
+  - Player Hand Slot
+  - Deck Slot
+  - Play Pile Slot
   layers:
   - Default
   - TransparentFX
