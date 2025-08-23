@@ -92,6 +92,7 @@ public class Setup : MonoBehaviour
             pre.name = spritesShuffled[cardsDealt].name;
             pre.transform.SetParent(compFaceUp[i].transform);
             pre.transform.DOMove(compFaceUp[i].transform.position, 0.35f);
+            pre.GetComponent<BoxCollider2D>().enabled = false;
             cardsDealt++;
             yield return new WaitForSeconds(0.5f);
         }
@@ -107,6 +108,7 @@ public class Setup : MonoBehaviour
             pre.name = spritesShuffled[cardsDealt].name;
             pre.transform.SetParent(compHand[i].transform);
             pre.transform.DOMove(compHand[i].transform.position, 0.35f);
+            pre.GetComponent<BoxCollider2D>().enabled = false;
             cardsDealt++;
             yield return new WaitForSeconds(0.5f);
         }
@@ -141,6 +143,7 @@ public class Setup : MonoBehaviour
             pre.name = spritesShuffled[cardsDealt].name;
             pre.transform.SetParent(playerFaceUp[i].transform);
             pre.transform.DOMove(playerFaceUp[i].transform.position, 0.35f);
+            pre.GetComponent<BoxCollider2D>().enabled = false;
             cardsDealt++;
             yield return new WaitForSeconds(0.5f);
         }
@@ -157,6 +160,7 @@ public class Setup : MonoBehaviour
             pre.name = spritesShuffled[cardsDealt].name;
             pre.transform.SetParent(playerHand[i].transform);
             pre.transform.DOMove(playerHand[i].transform.position, 0.35f);
+            pre.GetComponent<BoxCollider2D>().enabled = false;
             cardsDealt++;
             yield return new WaitForSeconds(0.5f);
         }
@@ -178,6 +182,7 @@ public class Setup : MonoBehaviour
             pre.name = spritesShuffled[cardsDealt].name;
             pre.transform.SetParent(deck[0].transform);
             pre.transform.DOMove(deck[0].transform.position, 0.35f);
+            pre.GetComponent<BoxCollider2D>().enabled = false;
             cardsDealt++;
         }
         // call DrawDeck function in the deck script to get started
