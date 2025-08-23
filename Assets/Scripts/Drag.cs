@@ -23,11 +23,6 @@ public class Drag : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHand
         posToReturnTo = transform.position;
         originalPosition = transform.position;
         originalParent = transform.parent;
-        // TODO: Add function for this to only happen when card is placed in player hand
-        // if (faceDown)
-        // {
-        //     this.GetComponent<SpriteRenderer>().sprite = faceSprite;
-        // }
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -82,9 +77,39 @@ public class Drag : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHand
             ReturnCardToOriginSlot();
         }
     }
+
+    public void PlaceDeckCardInPlayerHand(PointerEventData eventData)
+    {
+        GameObject dropTarget = eventData.pointerEnter;
+
+        if (dropTarget != null)
+        {
+            print("Drop Target: " + dropTarget.name + " | Tag: " + dropTarget.tag);
+            
+            if (
+                (eventData.pointerDrag.gameObject.GetComponent<Drag>().originalParent.name == "Deck")
+                && (dropTarget.CompareTag("Player Hand Slot"))
+            )
+            {
+                PlaceCardPerfectlyInSlot();
+                if (faceDown)
+                    {
+                        this.GetComponent<SpriteRenderer>().sprite = faceSprite;
+                    }
+                else
+                    {
+                        ReturnCardToOriginSlot();
+                    }
+            }
+        }
+        
+    }
+
+
     public void OnEndDrag(PointerEventData eventData)
     {
         OnlyPlacePlayerHandCardInPlayPile(eventData);
+        PlaceDeckCardInPlayerHand(eventData);
     }
 
 }

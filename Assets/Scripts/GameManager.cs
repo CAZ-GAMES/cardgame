@@ -38,6 +38,8 @@ public class GameManager : MonoBehaviour
                 break;
             case GameState.Lose:
                 break;
+            case GameState.DeckIsEmpty:
+                break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(newState), newState, null);
         }
@@ -55,4 +57,5 @@ public enum GameState
     ComputerTurn,
     Win,
     Lose,
+    DeckIsEmpty,
 }
