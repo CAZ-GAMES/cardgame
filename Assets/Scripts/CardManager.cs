@@ -1,4 +1,6 @@
 using System;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class CardManager : MonoBehaviour
@@ -17,6 +19,8 @@ public class CardManager : MonoBehaviour
     GameObject[] CompHandCards;
     [SerializeField]
     GameObject Deck;
+
+    public static GameObject PlayPileTopCard;
 
 
     void OnEnable()
@@ -63,6 +67,34 @@ public class CardManager : MonoBehaviour
             {
                 PlayerFaceUpCards[i].transform.GetChild(0).GetComponent<BoxCollider2D>().enabled = false;
             }
+        }
+    }
+
+    public static bool ValidateCard(GameObject cardToBePlayed, GameObject CardOnTop)
+    {
+        int CTBP = int.Parse(cardToBePlayed.name[..2]);
+        // check to see if we have special cards first
+        if (CTBP == 2)
+        {
+            // reset pile
+            print("Reset Pile");
+            return true;
+        }
+        else if (CTBP == 10)
+        {
+            // blow up pile
+            print("Blow Up Pile");
+            return true;
+        }
+        if (CTBP >= int.Parse(CardOnTop.name[..2]))
+        {
+            print("True");
+            return true;
+        }
+        else
+        {
+            print("False");
+            return false;
         }
     }
 }

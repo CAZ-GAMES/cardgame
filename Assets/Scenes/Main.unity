@@ -1205,6 +1205,7 @@ MonoBehaviour:
   - {fileID: 900559275}
   - {fileID: 1737451634}
   Deck: {fileID: 1566216090}
+  PlayPile: {fileID: 1116249016}
 --- !u!4 &541160997
 Transform:
   m_ObjectHideFlags: 0

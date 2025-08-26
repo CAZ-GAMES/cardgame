@@ -62,7 +62,6 @@ public class Drag : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHand
 
     public void OnlyPlacePlayerHandCardInPlayPile(PointerEventData eventData)
     {
-        print("Original Parent: " + eventData.pointerDrag.gameObject.GetComponent<Drag>().originalParent.name);
 
         if (
             (eventData.pointerDrag.gameObject.GetComponent<Drag>().originalParent.name == "Player Hand 0")
@@ -84,7 +83,6 @@ public class Drag : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHand
 
         if (dropTarget != null)
         {
-            print("Drop Target: " + dropTarget.name + " | Tag: " + dropTarget.tag);
             
             if (
                 (eventData.pointerDrag.gameObject.GetComponent<Drag>().originalParent.name == "Deck")
