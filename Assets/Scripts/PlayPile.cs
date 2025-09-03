@@ -21,6 +21,7 @@ public class PlayPile : MonoBehaviour, IDropHandler
             if (this.transform.childCount > 0)
             {
                 //print(this.transform.GetChild(playPileSize - 1).gameObject.name);
+                // function will return a bool
                 if (CardManager.ValidateCard(eventData.pointerDrag.gameObject, CardManager.PlayPileTopCard))
                 {
                     this.transform.GetChild(playPileSize - 1).gameObject.SetActive(false);
@@ -30,15 +31,19 @@ public class PlayPile : MonoBehaviour, IDropHandler
                     CardManager.PlayPileTopCard = eventData.pointerDrag.gameObject;
                     playPileSize++;
                 }
-            }
                 else
                 {
-                    eventData.pointerDrag.transform.GetComponent<Renderer>().sortingOrder = 1;
-                    eventData.pointerDrag.transform.SetParent(this.transform);
-                    eventData.pointerDrag.gameObject.GetComponent<Drag>().posToReturnTo = this.transform.position;
-                    CardManager.PlayPileTopCard = eventData.pointerDrag.gameObject;
-                    playPileSize++;
+                    print("Cards not valid");
                 }
+            }
+            else
+            {
+                eventData.pointerDrag.transform.GetComponent<Renderer>().sortingOrder = 1;
+                eventData.pointerDrag.transform.SetParent(this.transform);
+                eventData.pointerDrag.gameObject.GetComponent<Drag>().posToReturnTo = this.transform.position;
+                CardManager.PlayPileTopCard = eventData.pointerDrag.gameObject;
+                playPileSize++;
+            }
         }
     }
 }
