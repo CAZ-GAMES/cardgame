@@ -30,6 +30,8 @@ public class Setup : MonoBehaviour
     Stack<Sprite> spritesShuffledStack = new Stack<Sprite>();
     int cardsDealt = 0;
 
+    private float dealSpeed = 0.175f;
+    private float waitTime = 0.20f;
     void OnEnable()
     {
         GameManager.OnGameStateChanged += RunCoroutine;
@@ -75,10 +77,10 @@ public class Setup : MonoBehaviour
             // pre.name = spritesShuffled[cardsDealt].name;
             pre.name = spritesShuffledStack.Pop().name;
             pre.transform.SetParent(compFaceDown[i].transform);
-            pre.transform.DOMove(compFaceDown[i].transform.position, 0.35f);
+            pre.transform.DOMove(compFaceDown[i].transform.position, dealSpeed);
             pre.GetComponent<BoxCollider2D>().enabled = false;
             cardsDealt++;
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(waitTime);
         }
         StartCoroutine(SetCompUpCards());
     }
@@ -91,10 +93,10 @@ public class Setup : MonoBehaviour
             pre.GetComponent<Renderer>().sortingLayerID = SortingLayer.NameToID("FaceUp");
             pre.name = spritesShuffled[cardsDealt].name;
             pre.transform.SetParent(compFaceUp[i].transform);
-            pre.transform.DOMove(compFaceUp[i].transform.position, 0.35f);
+            pre.transform.DOMove(compFaceUp[i].transform.position, dealSpeed);
             pre.GetComponent<BoxCollider2D>().enabled = false;
             cardsDealt++;
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(waitTime);
         }
         StartCoroutine(SetCompHand());
     }
@@ -107,10 +109,10 @@ public class Setup : MonoBehaviour
             pre.GetComponent<Renderer>().sortingLayerID = SortingLayer.NameToID("FaceUp");
             pre.name = spritesShuffled[cardsDealt].name;
             pre.transform.SetParent(compHand[i].transform);
-            pre.transform.DOMove(compHand[i].transform.position, 0.35f);
+            pre.transform.DOMove(compHand[i].transform.position, dealSpeed);
             pre.GetComponent<BoxCollider2D>().enabled = false;
             cardsDealt++;
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(waitTime);
         }
         StartCoroutine(SetPlayerDownCards());
     }
@@ -125,10 +127,10 @@ public class Setup : MonoBehaviour
             pre.GetComponent<SpriteRenderer>().sprite = cardBack;
             pre.name = spritesShuffled[cardsDealt].name;
             pre.transform.SetParent(playerFaceDown[i].transform);
-            pre.transform.DOMove(playerFaceDown[i].transform.position, 0.35f);
+            pre.transform.DOMove(playerFaceDown[i].transform.position, dealSpeed);
             pre.GetComponent<BoxCollider2D>().enabled = false;
             cardsDealt++;
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(waitTime);
         }
         StartCoroutine(SetPlayerUpCards());
     }
@@ -142,10 +144,10 @@ public class Setup : MonoBehaviour
             pre.GetComponent<Renderer>().sortingLayerID = SortingLayer.NameToID("FaceUp");
             pre.name = spritesShuffled[cardsDealt].name;
             pre.transform.SetParent(playerFaceUp[i].transform);
-            pre.transform.DOMove(playerFaceUp[i].transform.position, 0.35f);
+            pre.transform.DOMove(playerFaceUp[i].transform.position, dealSpeed);
             pre.GetComponent<BoxCollider2D>().enabled = false;
             cardsDealt++;
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(waitTime);
         }
         StartCoroutine(SetPlayerHand());
     }
@@ -159,10 +161,10 @@ public class Setup : MonoBehaviour
             pre.GetComponent<Renderer>().sortingLayerID = SortingLayer.NameToID("FaceUp");
             pre.name = spritesShuffled[cardsDealt].name;
             pre.transform.SetParent(playerHand[i].transform);
-            pre.transform.DOMove(playerHand[i].transform.position, 0.35f);
+            pre.transform.DOMove(playerHand[i].transform.position, dealSpeed);
             pre.GetComponent<BoxCollider2D>().enabled = false;
             cardsDealt++;
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(waitTime);
         }
         DrawableDeck();
     }
@@ -181,7 +183,7 @@ public class Setup : MonoBehaviour
             pre.GetComponent<Drag>().faceSprite = spritesShuffled[cardsDealt];
             pre.name = spritesShuffled[cardsDealt].name;
             pre.transform.SetParent(deck[0].transform);
-            pre.transform.DOMove(deck[0].transform.position, 0.35f);
+            pre.transform.DOMove(deck[0].transform.position, dealSpeed);
             pre.GetComponent<BoxCollider2D>().enabled = false;
             cardsDealt++;
         }
