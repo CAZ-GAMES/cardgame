@@ -2,17 +2,21 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using DG.Tweening;
 
-public class PlayerHand : MonoBehaviour, IDropHandler
+public class FaceUpCards : MonoBehaviour, IDropHandler
 {
     int playPileSize = 0;
     public void OnDrop(PointerEventData eventData)
     {
-        OnlyPlaceDeckCardsInPlayerHand(eventData);
+        OnlyPlacePlayerHandCardInFaceUp(eventData);
     }
 
-    public void OnlyPlaceDeckCardsInPlayerHand(PointerEventData eventData)
+    public void OnlyPlacePlayerHandCardInFaceUp(PointerEventData eventData)
     {
-        if (eventData.pointerDrag.gameObject.GetComponent<Drag>().originalParent.name == "Deck")
+        if (
+            (eventData.pointerDrag.gameObject.GetComponent<Drag>().originalParent.name == "Player Hand 0")
+            || (eventData.pointerDrag.gameObject.GetComponent<Drag>().originalParent.name == "Player Hand 1")
+            || (eventData.pointerDrag.gameObject.GetComponent<Drag>().originalParent.name == "Player Hand 2")
+        )
         {
             print("What was dropped: " + eventData.pointerDrag);
             if (this.transform.childCount > 0)

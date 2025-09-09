@@ -19,7 +19,7 @@ public class Setup : MonoBehaviour
     [SerializeField] GameObject[] compHand = new GameObject[3];
     [SerializeField] GameObject[] playerFaceDown = new GameObject[3];
     [SerializeField] GameObject[] playerFaceUp = new GameObject[3];
-    [SerializeField] GameObject[] playerHand = new GameObject[3];
+    [SerializeField] HandManager playerHand = new HandManager();
     [SerializeField] List<GameObject> deck = new List<GameObject>();
 
     [SerializeField] GameObject deckCover;
@@ -154,15 +154,10 @@ public class Setup : MonoBehaviour
 
     IEnumerator SetPlayerHand()
     {
-        for (int i = 0; i < playerHand.Length; i++)
+        for (int i = 0; i < 3; i++)
         {
-            var pre = Instantiate(prefab, transform.position, Quaternion.identity);
-            pre.GetComponent<SpriteRenderer>().sprite = spritesShuffled[cardsDealt];
-            pre.GetComponent<Renderer>().sortingLayerID = SortingLayer.NameToID("FaceUp");
-            pre.name = spritesShuffled[cardsDealt].name;
-            pre.transform.SetParent(playerHand[i].transform);
-            pre.transform.DOMove(playerHand[i].transform.position, dealSpeed);
-            pre.GetComponent<BoxCollider2D>().enabled = false;
+            Sprite sprite= spritesShuffled[cardsDealt];
+            playerHand.DrawCard(transform.position, sprite);
             cardsDealt++;
             yield return new WaitForSeconds(waitTime);
         }

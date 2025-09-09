@@ -105,11 +105,41 @@ public class Drag : MonoBehaviour, IBeginDragHandler, IEndDragHandler, IDragHand
         
     }
 
+    public void PlacePlayerHandCardInFaceUp(PointerEventData eventData)
+    {
+        GameObject dropTarget = eventData.pointerEnter;
+
+        if (dropTarget != null)
+        {
+            print("Drop Target: " + dropTarget.name + " | Tag: " + dropTarget.tag);
+            
+            if (
+                (eventData.pointerDrag.gameObject.GetComponent<Drag>().originalParent.name == "Player Hand 0")
+            || (eventData.pointerDrag.gameObject.GetComponent<Drag>().originalParent.name == "Player Hand 1")
+            || (eventData.pointerDrag.gameObject.GetComponent<Drag>().originalParent.name == "Player Hand 2")
+                && (dropTarget.CompareTag("Face Up Slot"))
+            )
+            {
+                PlaceCardPerfectlyInSlot();
+                if (faceDown)
+                    {
+                        this.GetComponent<SpriteRenderer>().sprite = faceSprite;
+                    }
+                else
+                    {
+                        ReturnCardToOriginSlot();
+                    }
+            }
+        }
+        
+    }
+
 
     public void OnEndDrag(PointerEventData eventData)
     {
         OnlyPlacePlayerHandCardInPlayPile(eventData);
         PlaceDeckCardInPlayerHand(eventData);
+        PlacePlayerHandCardInFaceUp(eventData);
     }
 
 }

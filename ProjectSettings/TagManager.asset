@@ -9,6 +9,8 @@ TagManager:
   - Player Hand Slot
   - Deck Slot
   - Play Pile Slot
+  - Face Up Slot
+  - Face Down Slot
   layers:
   - Default
   - TransparentFX

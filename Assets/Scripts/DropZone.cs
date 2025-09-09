@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 
 public class DropZone : MonoBehaviour, IPointerUpHandler, IPointerClickHandler, IDropHandler
 {
+    [SerializeField] HandManager playerHand = new HandManager();
     public void DropCardOnlyOnPlayerPile(PointerEventData eventData)
     {
         print("Dropped in card only function: " + eventData.pointerDrag);
@@ -28,7 +29,7 @@ public class DropZone : MonoBehaviour, IPointerUpHandler, IPointerClickHandler, 
     // use this to set the position for the card 
     public void OnDrop(PointerEventData eventData)
     {
-        // DropCardOnlyOnPlayerPile(eventData);
+        OnlyPlaceDeckCardsInPlayerHand(eventData);
     }
     public void OnPointerClick(PointerEventData eventData)
     {
@@ -45,49 +46,11 @@ public class DropZone : MonoBehaviour, IPointerUpHandler, IPointerClickHandler, 
         print("UP");
     }
 
-    // void OnTriggerEnter2D(Collider2D collision)
-    // {
-    //     collision.gameObject.GetComponent<Drag>().posToReturnTo = this.transform.position;
-    // }
-
-    void OnTriggerEnter2D(Collider2D collision)
+    public void OnlyPlaceDeckCardsInPlayerHand(PointerEventData eventData)
     {
-        if (transform.childCount > 0 && transform.GetChild(0).name != collision.name)
-        {
-            
-            // swap objects here
-            //print(collision);
-            //print(collision.transform.parent.name);
-
-            //transform.GetChild(0).DOMove(collision.transform.GetComponent<Drag>().posToReturnTo, 0.1f);
-            //transform.GetChild(0).transform.SetParent(collision.transform.parent, true);
-
-        }
-        else
-        {
-            //collision.gameObject.GetComponent<Drag>().posToReturnTo = this.transform.position;
-            //collision.gameObject.transform.SetParent(this.transform, false);
-        }
-
+        print("DROPZONE!");
+        print(this.transform.GetChild(0).gameObject.name);
+        // playerHand.handCards.Add()
     }
-    void OnTriggerStay2D(Collider2D collision)
-    {
-        // if (transform.childCount > 0 && transform.GetChild(0).name != collision.name)
-        // {
-        //     // swap objects here
-        //     //print(collision);
-        //     print(collision.transform.parent.name);
-
-        //     transform.GetChild(0).DOMove(collision.transform.GetComponent<Drag>().posToReturnTo, 0.1f);
-        //     transform.GetChild(0).transform.SetParent(collision.transform.parent, true);
-
-        // }
-        // else
-        // {
-        //     collision.gameObject.GetComponent<Drag>().posToReturnTo = this.transform.position;
-        //     collision.gameObject.transform.SetParent(this.transform, false);
-        // }
-    }
-
 
 }

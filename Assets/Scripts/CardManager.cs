@@ -3,20 +3,15 @@ using UnityEngine;
 
 public class CardManager : MonoBehaviour
 {
-    [SerializeField]
-    GameObject[] PlayerFaceUpCards;
-    [SerializeField]
-    GameObject[] PlayerFaceDownCards;
-    [SerializeField]
-    GameObject[] PlayerHandCards;
-    [SerializeField]
-    GameObject[] CompFaceUpCards;
-    [SerializeField]
-    GameObject[] CompFaceDownCards;
-    [SerializeField]
-    GameObject[] CompHandCards;
-    [SerializeField]
-    GameObject Deck;
+    [SerializeField] GameObject[] PlayerFaceUpCards;
+    [SerializeField] GameObject[] PlayerFaceDownCards;
+
+    [SerializeField] HandManager HandManager = new HandManager();
+
+    [SerializeField] GameObject[] CompFaceUpCards;
+    [SerializeField] GameObject[] CompFaceDownCards;
+    [SerializeField] GameObject[] CompHandCards;
+    [SerializeField] GameObject Deck;
 
 
     void OnEnable()
@@ -41,10 +36,10 @@ public class CardManager : MonoBehaviour
                 PlayerFaceUpCards[i].transform.GetChild(0).GetComponent<BoxCollider2D>().enabled = true;
             }
             // Unlock Player Hand Cards
-            for (int i = 0; i < PlayerHandCards.Length; i++)
-            {
-                PlayerHandCards[i].transform.GetChild(0).GetComponent<BoxCollider2D>().enabled = true;
-            }
+            // for (int i = 0; i < HandManager.handCards.Count-1; i++)
+            // {
+            //     HandManager.handCards[i].transform.GetChild(0).GetComponent<BoxCollider2D>().enabled = true;
+            // }
             // Unlock deck for now might need to use a different call for unlocking deck
             // TODO: Make another way to call function for unlocking deck
             for (int i = 0; i < Deck.transform.childCount; i++)
